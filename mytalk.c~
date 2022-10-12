@@ -1,0 +1,91 @@
+/* Mytalk Asgn 5
+   Program that allows user on one machine
+   to send and receive messages from another 
+   user to another machine. 
+   By Mira Shlimenzon */
+
+
+#include "mytalk.h"
+
+int main(int argc, char *argv[]) {
+  int client = 0, v = 0, a = 0, N = 0;
+  int opt;
+  struct hostent *host;
+  int port_num;
+  char *end;
+ 
+  if(argc < 2) {
+    printf("00");
+    usage();
+  }
+  while((opt = getopt(argc, argv, "-:vaN")) != -1) {
+    switch(opt){
+      case 'v':
+	printf("vv\n");
+	v = 1;
+	break;
+      case 'a':
+	printf("aa\n");
+	a = 1;
+	break;
+      case 'N':
+	printf("NN\n");
+	N = 1;
+	break;
+      case '?':
+        printf("00");
+	usage();
+    }
+  }
+
+  /* if letftover arguments */
+  if(optind < argc) {
+    while(optind < argc) {
+      /* attempting to process port # */
+      port_num = strtol(argv[optind], &end, 10);
+      if(*end) { /* port_num isn't a num */
+	/* if no other arguments after, then no port # given */
+  printf("%s\n", argv[optind]);
+	if(optind + 1 == argc){
+    printf("3");
+	  usage();
+	}
+	/* maybe this is hostname */
+	else {
+	  if((host = gethostbyname(argv[optind])) == NULL) {
+	    printf("2");
+      usage();
+	    /* there shouldn't be an argument on the command
+               line that is neither a hostname or a port */
+	  }
+	  else { /* mytalk is client */
+	    client = 1;
+	    printf("HOST %s\n", host->h_name);
+	  }
+	} 
+      }
+      /* if port_num is #, let's check if out of port range */
+      if(!PORT_RANGE(port_num)) {
+        printf("%d\n", port_num);
+        printf("hh");
+	usage();
+      }
+      printf("%d\n", port_num);
+      optind++;
+    }
+  }
+  else {
+    /* so no port # given */
+    printf("1");
+    usage();
+  }
+ return 0;
+}
+
+
+/* Usage print. Returns nothing. */
+void usage() {
+  printf("Usage: [ -v ] [ -a ] [ -N ] [ hostname ] port");
+  exit(-1);
+}
+
